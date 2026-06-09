@@ -242,7 +242,6 @@ def lifecycle_evidence_chaining(
     chain: List[EvidenceRecord] = []
     prev_hash: Optional[str] = None
 
-    # Creation stage
     artifact_hash = hash_json(artifact)
     creation = _make_record(
         stage="creation",
@@ -257,7 +256,6 @@ def lifecycle_evidence_chaining(
     chain.append(creation)
     prev_hash = creation.record_hash
 
-    # Distribution stage
     manifest_signature = hash_json({"manifest": manifest, "signed": True})
     distribution = _make_record(
         stage="distribution",
@@ -273,7 +271,6 @@ def lifecycle_evidence_chaining(
     chain.append(distribution)
     prev_hash = distribution.record_hash
 
-    # Installation stage
     verification_succeeds = bool(target_device.get("verification_succeeds", True))
     installation_integrity = 1 if verification_succeeds else 0
     install_stage = "installation" if verification_succeeds else "installation-failure"
@@ -301,7 +298,6 @@ def lifecycle_evidence_chaining(
         }
         return lir, [record.to_dict() for record in chain]
 
-    # Execution stage: event-triggered SDI emission
     for event in execution_events:
         sdi, sdi_record = event_triggered_sdi_record_generation(
             installation_integrity=installation_integrity,
@@ -323,7 +319,6 @@ def lifecycle_evidence_chaining(
             chain.append(execution)
             prev_hash = execution.record_hash
 
-    # Governance stage
     governance = _make_record(
         stage="governance",
         corr_id=corr_id,

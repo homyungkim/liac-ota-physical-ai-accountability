@@ -1,49 +1,87 @@
-"""Basic tests for the LIAC reference implementation."""
+# LIAC Reference Implementation
 
-from liac.evidence import (
-    event_triggered_sdi_record_generation,
-    lifecycle_evidence_chaining,
-    verify_chain,
-)
+Reference implementation for the algorithms described in the IEEE Access article:
 
+**Structural Limits of Installation-Time Integrity Assurance: A Lifecycle-Based Accountability Framework for Over-the-Air-Enabled Physical AI Systems**
 
-def test_sdi_not_emitted_when_installation_integrity_fails():
-    sdi, record = event_triggered_sdi_record_generation(
-        installation_integrity=0,
-        behavior={"semantic_safe": False, "deviation": 1.0},
-        context={"environment": "test"},
-        threshold=0.5,
-        corr_id="test",
-    )
-    assert sdi == 0
-    assert record is None
+This repository provides a compact, reproducibility-oriented implementation of:
 
+- **Algorithm 1:** Lifecycle Evidence Chaining in LIAC
+- **Algorithm 2:** Event-Triggered SDI Record Generation
 
-def test_sdi_emitted_for_unsafe_behavior_above_threshold():
-    sdi, record = event_triggered_sdi_record_generation(
-        installation_integrity=1,
-        behavior={"semantic_safe": False, "deviation": 0.8},
-        context={"environment": "test"},
-        threshold=0.5,
-        corr_id="test",
-    )
-    assert sdi == 1
-    assert record is not None
-    assert record["corr_id"] == "test"
+The implementation is intentionally lightweight. It is designed to clarify the evidence-generation and evidence-linkage logic of the Lifecycle Integrity and Accountability Coupling (LIAC) framework, not to serve as a production-grade secure logging, attestation, or runtime monitoring system.
 
+## Repository scope
 
-def test_lifecycle_chain_verifies():
-    lir, chain = lifecycle_evidence_chaining(
-        artifact={"name": "demo", "version": "1.0"},
-        manifest={"release_id": "r1"},
-        target_device={"verification_succeeds": True},
-        execution_events=[
-            {
-                "behavior": {"semantic_safe": False, "deviation": 0.8},
-                "context": {"environment": "test"},
-            }
-        ],
-        corr_id="test-chain",
-    )
-    assert lir["status"] == "complete"
-    assert verify_chain(chain)
+This code demonstrates how lifecycle evidence records can be generated and cryptographically linked across the following stages:
+
+1. Creation
+2. Distribution
+3. Installation
+4. Execution
+5. Governance
+
+It also demonstrates how a Semantic Deviation Indicator (SDI) evidence record may be emitted only when:
+
+- installation-time artifact integrity remains valid,
+- runtime behavior exits the semantic safety set, and
+- the deviation measure exceeds a predefined triggering threshold.
+
+## Repository structure
+
+```text
+.
+├── README.md
+├── LICENSE
+├── CITATION.cff
+├── requirements.txt
+├── .gitignore
+├── src/
+│   └── liac/
+│       ├── __init__.py
+│       └── evidence.py
+├── examples/
+│   └── run_demo.py
+└── tests/
+    └── test_liac.py
+```
+
+## Quick start
+
+Clone the repository and run the demonstration:
+
+```bash
+git clone https://github.com/homyungkim/liac-ota-physical-ai-accountability.git
+cd liac-ota-physical-ai-accountability
+
+python examples/run_demo.py
+```
+
+No external Python package is required for the core demonstration.
+
+## Example output
+
+The demo prints:
+
+- a lifecycle correlation identifier,
+- a linked lifecycle evidence chain,
+- whether an SDI was emitted,
+- the SDI evidence record when a semantically significant deviation occurs.
+
+## Reproducibility note
+
+The code is deterministic when a fixed correlation identifier is supplied. In the demo, record timestamps are generated at runtime; therefore, record hashes may differ across executions unless timestamps are fixed by the caller.
+
+## Security note
+
+This repository uses standard hash functions only for demonstration of evidence linkage. It does not implement production-grade secure storage, hardware-backed attestation, trusted execution, certificate validation, key management, or tamper-resistant logging. Such mechanisms should be supplied by the deployment environment.
+
+## Suggested manuscript sentence
+
+The following sentence may be added near Algorithm 1/2 or as a footnote in the final manuscript:
+
+> To support reproducibility, a reference implementation of the LIAC evidence-chaining and event-triggered SDI record-generation procedures is publicly available at: https://github.com/homyungkim/liac-ota-physical-ai-accountability
+
+## License
+
+This repository is released under the MIT License.
