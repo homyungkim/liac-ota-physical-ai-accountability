@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this reference implementation, please cite the associated IEEE Access article."
+title: "LIAC Reference Implementation for OTA-Enabled Physical AI Accountability"
+authors:
+  - family-names: "Kim"
+    given-names: "Ho Myung"
+  - family-names: "Lee"
+    given-names: "Eun Hwan"
+year: 2026
+license: MIT
+repository-code: "https://github.com/<YOUR-GITHUB-ID>/liac-ota-physical-ai-accountability"
+abstract: "Reference implementation of LIAC lifecycle evidence chaining and event-triggered SDI record generation for reproducibility."
+keywords:
+  - LIAC
+  - OTA
+  - Physical AI
+  - Accountability
+  - Semantic Deviation Indicator
+  - Lifecycle Evidence
